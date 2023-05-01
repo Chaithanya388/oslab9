@@ -7,6 +7,45 @@
 int terminal_position = 0;
 char* const VGA_BUFFER = (char*) 0xb8000;
 
+#include <stdio.h>
+#include <stdlib.h>
+
+void itoa(char* buffer, int toPrint);
+
+void print_integer(int toPrint) {
+    char buffer[12]; // buffer size is enough for 32-bit integers
+    itoa(buffer, toPrint);
+    printf("%s", buffer);
+}
+
+void itoa(char* buffer, int toPrint) {
+    int i = 0;
+    int isNegative = 0;
+    if (toPrint < 0) {
+        isNegative = 1;
+        toPrint = -toPrint;
+    }
+    do {
+        buffer[i++] = toPrint % 10 + '0';
+        toPrint /= 10;
+    } while (toPrint > 0);
+    if (isNegative) {
+        buffer[i++] = '-';
+    }
+    buffer[i] = '\0';
+    // Reverse the string
+    int j = 0;
+    if (isNegative) {
+        j = 1;
+    }
+    for (; j < i / 2; j++) {
+        char tmp = buffer[j];
+        buffer[j] = buffer[i - j - 1];
+        buffer[i - j - 1] = tmp;
+    }
+}
+
+
 void update_cursor(int terminal_position)
 {	
 	uint16_t cursor_position = terminal_position >> 1;
